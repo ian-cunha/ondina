@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Regras para a coleção de usuários
+    match /users/{userId} {
+      // O próprio usuário pode ler e escrever seus dados (incluindo criar)
+      allow create: if request.auth != null && request.auth.uid == userId;
+      
+      // O próprio usuário pode ler, OU o parceiro vinculado pode ler
+      allow read: if request.auth != null && (request.auth.uid == userId || resource.data.partnerId == request.auth.uid);
+      
+      // Regra de atualização complexa:
+      // 1. O próprio usuário pode atualizar qualquer campo.
+      // 2. OUTRO usuário pode atualizar APENAS se estiver definindo o campo 'partnerId' para o SEU PRÓPRIO ID (Linkando conta).
+      // 3. OUTRO usuário pode atualizar APENAS se estiver REMOVENDO o campo 'partnerId' ou 'linkedAccountId' que contém SEU PRÓPRIO ID (Deslinkando conta).
+      allow update: if request.auth != null && (
+        request.auth.uid == userId || 
+        // Lógica de Vincular (Parceiro se conectando à Mulher)
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['partnerId']) && 
+         'partnerId' in request.resource.data &&
+         request.resource.data.partnerId == request.auth.uid &&
+         !('partnerId' in resource.data)) ||
+        
+        // Lógica de Desvincular (Parceiro se desconectando da Mulher)
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['partnerId']) && 
+         resource.data.partnerId == request.auth.uid && 
+         !('partnerId' in request.resource.data)) ||
+
+        // Lógica de Desvincular (Mulher se desconectando do Parceiro)
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['linkedAccountId']) && 
+         resource.data.linkedAccountId == request.auth.uid && 
+         !('linkedAccountId' in request.resource.data))
+      );
+
+      // Subcoleção de ciclos
+      match /cycles/{cycleId} {
+        // O dono da conta pode fazer tudo
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+        
+        // O parceiro que tiver seu ID no campo 'partnerId' do documento pai (usuário) pode LER os ciclos
+        allow read: if request.auth != null && get(/databases/$(database)/documents/users/$(userId)).data.partnerId == request.auth.uid;
+      }
+    }
+
+    // Regras para os códigos de convite
+    match /invites/{code} {
+      // Qualquer usuário autenticado pode criar um convite (gerar código) e ler um convite (usar código)
+      allow read, create: if request.auth != null;
+    }
+  }
+}
