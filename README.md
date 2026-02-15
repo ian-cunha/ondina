@@ -1,37 +1,58 @@
 # 🌊 Ondina
 
-![Badge em Desenvolvimento](http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge)
-![Badge License](http://img.shields.io/static/v1?label=License&message=MIT&color=green&style=for-the-badge)
-> **Ondina** é um aplicativo de rastreamento de ciclo menstrual focado em [inserir diferencial: ex: privacidade, simplicidade, design intuitivo ou previsão baseada em dados].
+![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-Ready-purple?style=for-the-badge)
 
-## 📱 Sobre o Projeto
+> **Ondina** é um Progressive Web App (PWA) de rastreamento de ciclo menstrual que une a precisão de dados, uma UX visual envolvente e privacidade rigorosa.
 
-O Ondina foi desenvolvido com o objetivo de ajudar pessoas que menstruam a monitorar seus ciclos, prever períodos férteis e registrar sintomas de forma simples e segura. O nome é inspirado em [explicar a origem do nome se houver, ex: nas ninfas das águas, remetendo a fluidez].
+## 💡 Sobre o Projeto
 
-### 🎯 Principais Funcionalidades
+O Ondina foi arquitetado para resolver o trilema dos aplicativos de saúde feminina: **Precisão vs. Design vs. Privacidade**.
 
-* **Calendário Interativo:** Visualização clara das datas de menstruação e previsão para os próximos meses.
-* **Registro de Sintomas:** Acompanhamento diário de humor, fluxo e sintomas físicos.
-* **Lembretes Personalizados:** Notificações para início do ciclo, período fértil ou uso de medicamentos.
-* **Relatórios e Insights:** [Se tiver] Gráficos que mostram padrões ao longo do tempo.
-* **Modo Privacidade:** [Se tiver] Opção de proteger o app com senha ou biometria.
+Inspirado nos líderes de mercado, o projeto integra:
+* **Precisão de Dados (Clue):** Algoritmos de previsão baseados em médias móveis dos últimos 3 ciclos.
+* **UX Visual (Flo/Apple Health):** Interface intuitiva com visualização circular do ciclo e Bento Grid layouts.
+* **Privacidade (Stardust):** Arquitetura *Privacy-first* com regras rigorosas de segurança no Firestore e preparação para criptografia.
 
-## 🎨 Layout
+## 🛠 Tech Stack
 
-<div align="center">
-  <img src="caminho/para/imagem1.png" alt="Tela Inicial" width="200">
-  <img src="caminho/para/imagem2.png" alt="Calendário" width="200">
-  <img src="caminho/para/imagem3.png" alt="Sintomas" width="200">
-</div>
+O projeto utiliza uma arquitetura moderna baseada no **Next.js 15 (App Router)**, priorizando Server Components para performance e Client Components para interatividade.
 
-## 🛠 Tecnologias Utilizadas
+### Core
+* **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
+* **Linguagem:** [TypeScript](https://www.typescriptlang.org/)
+* **Estilização:** [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
+* **PWA:** Configuração de Manifesto e Service Workers para instalação nativa.
 
-Este projeto foi desenvolvido utilizando as seguintes tecnologias:
+### Backend & Dados
+* **BaaS:** Firebase (Authentication & Firestore).
+* **State Management:** Zustand (Estado global leve) e React Query (Server state caching).
+* **Validação:** Zod + React Hook Form.
 
-* **Front-end:** [Ex: React Native / Expo / Flutter / Swift]
-* **Back-end:** [Ex: Node.js / Firebase / Python]
-* **Banco de Dados:** [Ex: SQLite / Realm / PostgreSQL]
-* **Bibliotecas Principais:**
-  * [Lib 1 - ex: react-navigation]
-  * [Lib 2 - ex: date-fns]
-  * [Lib 3 - ex: chart-kit]
+### Features Específicas
+* **Visualização de Dados:** Recharts (Gráficos de tendências).
+* **Manipulação de Datas:** date-fns.
+
+## 📱 Funcionalidades
+
+### 1. Dashboard Intuitivo
+* **Cycle Circle:** Componente visual (SVG/CSS) que indica o dia atual, fase do ciclo e previsão da próxima menstruação.
+* **Bento Grid:** Cards resumidos para acesso rápido a sintomas, humor e previsões.
+
+### 2. Engine de Logging
+Sistema de tags categorizadas para registro diário:
+* **Físico:** Cólica, Inchaço, Dor de cabeça.
+* **Emocional:** Triste, Ansiosa, Feliz.
+* **Fluxo:** Leve, Moderado, Intenso.
+
+### 3. Algoritmo de Previsão
+* Cálculo automático da próxima menstruação baseado na média histórica.
+* Estimativa de janela fértil e ovulação (método padrão de 14 dias).
+
+### 4. Privacidade e Segurança
+* Autenticação via Firebase Auth.
+* **Firestore Security Rules:** Acesso estrito onde `request.auth.uid == userId`.
+* Estrutura de dados segregada (`users/{userId}/daily_logs`) para escalabilidade e segurança.
