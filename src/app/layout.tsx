@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ondina - Ciclo",
+  title: "Ondina",
   description: "Acompanhe seu ciclo de forma privada e segura.",
   icons: {
     icon: "/favicon.ico",
