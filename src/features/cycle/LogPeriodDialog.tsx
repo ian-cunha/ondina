@@ -40,8 +40,9 @@ export function LogPeriodDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size="lg" className="rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground">
-                    <Plus className="mr-2 h-5 w-5" /> Registrar Ciclo
+                <Button className="rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground h-10 w-10 sm:h-11 sm:w-auto sm:px-8 p-0 flex items-center justify-center">
+                    <Plus className="h-6 w-6 sm:h-5 sm:w-5 sm:mr-2" />
+                    <span className="hidden sm:inline">Registrar Ciclo</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
