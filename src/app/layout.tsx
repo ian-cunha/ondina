@@ -18,6 +18,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Ondina - Ciclo",
   description: "Acompanhe seu ciclo de forma privada e segura.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/logo.svg", // Using logo.svg as apple icon for now, or we could leave it out if not sure. Standard is often a png. User said verify favicon and logo.
+  },
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

@@ -12,6 +12,7 @@ import { LogPeriodDialog } from '@/features/cycle/LogPeriodDialog';
 import { usePartner } from '@/hooks/usePartner';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function Home() {
   const { user, loading: authLoading, logout } = useAuth();
@@ -48,10 +49,23 @@ export default function Home() {
     )
   }
 
+
+
   if (!user) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background">
-        <div className="max-w-md text-center space-y-6">
+        <div className="max-w-md text-center space-y-6 flex flex-col items-center">
+          <div className="relative">
+            <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-primary to-purple-600 opacity-20 blur-lg animate-pulse" />
+            <Image
+              src="/logo.svg"
+              alt="Ondina Logo"
+              width={120}
+              height={120}
+              className="relative h-32 w-32 drop-shadow-xl"
+              priority
+            />
+          </div>
           <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
             Ondina
           </h1>
