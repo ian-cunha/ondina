@@ -1,58 +1,38 @@
 # 🌊 Ondina
 
-![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
-![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)
-![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![PWA](https://img.shields.io/badge/PWA-Ready-purple?style=for-the-badge)
+**Conheça seu ciclo. Respeite seu ritmo.**
 
-> **Ondina** é um Progressive Web App (PWA) de rastreamento de ciclo menstrual que une a precisão de dados, uma UX visual envolvente e privacidade rigorosa.
+Bem-vinda ao **Ondina**, o seu novo companheiro para acompanhar o ciclo menstrual de forma simples, bonita e totalmente segura. Nós acreditamos que cuidar da sua saúde íntima não precisa ser complicado, nem colocar sua privacidade em risco.
 
-## 💡 Sobre o Projeto
+## 🌸 O que é o Ondina?
 
-O Ondina foi arquitetado para resolver o trilema dos aplicativos de saúde feminina: **Precisão vs. Design vs. Privacidade**.
+O Ondina é um aplicativo que ajuda você a entender melhor o seu corpo. Com ele, você pode registrar seus sintomas, acompanhar em qual fase do ciclo você está e saber quando será sua próxima menstruação ou período fértil, tudo isso em uma tela amigável e fácil de usar.
 
-Inspirado nos líderes de mercado, o projeto integra:
-* **Precisão de Dados (Clue):** Algoritmos de previsão baseados em médias móveis dos últimos 3 ciclos.
-* **UX Visual (Flo/Apple Health):** Interface intuitiva com visualização circular do ciclo e Bento Grid layouts.
-* **Privacidade (Stardust):** Arquitetura *Privacy-first* com regras rigorosas de segurança no Firestore e preparação para criptografia.
+O projeto nasceu para focar no que mais importa:
+1. **Precisão:** Saber o que esperar do seu corpo com base no seu próprio histórico.
+2. **Beleza e Facilidade:** Um visual agradável, moderno, que não confunde e vai direto ao ponto.
+3. **Privacidade Absoluta:** Seus dados são estritamente seus. Nós construímos o app pensando na sua segurança em primeiro lugar.
 
-## 🛠 Tech Stack
+## ✨ Principais Funcionalidades
 
-O projeto utiliza uma arquitetura moderna baseada no **Next.js 15 (App Router)**, priorizando Server Components para performance e Client Components para interatividade.
+### ⭕ Seu Ciclo em um Relance
+Na tela principal, você encontra o Círculo do Ciclo. De forma muito visual, ele te mostra em qual dia você está, a fase atual do seu ciclo e quantos dias faltam para a próxima menstruação.
 
-### Core
-* **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
-* **Linguagem:** [TypeScript](https://www.typescriptlang.org/)
-* **Estilização:** [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
-* **PWA:** Configuração de Manifesto e Service Workers para instalação nativa.
+### 📝 Diário do seu Corpo
+Sabe aquela dorzinha de cabeça ou mudança de humor? Você pode registrar tudo isso rapidamente! O Ondina permite que você anote:
+* **Sintomas Físicos:** como cólica ou inchaço.
+* **Humor:** se está se sentindo mais sensível, feliz ou ansiosa.
+* **Intensidade do Fluxo:** para acompanhar os dias mais intensos ou mais leves.
 
-### Backend & Dados
-* **BaaS:** Firebase (Authentication & Firestore).
-* **State Management:** Zustand (Estado global leve) e React Query (Server state caching).
-* **Validação:** Zod + React Hook Form.
+### 🔮 Previsões Inteligentes
+Quanto mais você usa o Ondina, mais ele aprende sobre o seu ritmo. Ele calcula automaticamente as datas da sua próxima menstruação, período fértil e ovulação com base nos seus ciclos anteriores.
 
-### Features Específicas
-* **Visualização de Dados:** Recharts (Gráficos de tendências).
-* **Manipulação de Datas:** date-fns.
+### 🔒 Um Cofre para seus Dados
+Sua intimidade é sagrada. O Ondina foi criado para ser um ambiente seguro, garantindo que ninguém além de você tenha acesso às suas anotações e ao seu histórico.
 
-## 📱 Funcionalidades
+## 📱 Como usar?
 
-### 1. Dashboard Intuitivo
-* **Cycle Circle:** Componente visual (SVG/CSS) que indica o dia atual, fase do ciclo e previsão da próxima menstruação.
-* **Bento Grid:** Cards resumidos para acesso rápido a sintomas, humor e previsões.
+O Ondina é super flexível. Ele funciona direto no navegador do seu computador ou celular. Além disso, você pode instalá-lo diretamente na tela inicial do seu smartphone para acessar como se fosse um aplicativo comum, de forma rápida e prática!
 
-### 2. Engine de Logging
-Sistema de tags categorizadas para registro diário:
-* **Físico:** Cólica, Inchaço, Dor de cabeça.
-* **Emocional:** Triste, Ansiosa, Feliz.
-* **Fluxo:** Leve, Moderado, Intenso.
-
-### 3. Algoritmo de Previsão
-* Cálculo automático da próxima menstruação baseado na média histórica.
-* Estimativa de janela fértil e ovulação (método padrão de 14 dias).
-
-### 4. Privacidade e Segurança
-* Autenticação via Firebase Auth.
-* **Firestore Security Rules:** Acesso estrito onde `request.auth.uid == userId`.
-* Estrutura de dados segregada (`users/{userId}/daily_logs`) para escalabilidade e segurança.
+---
+*Ondina: Feito para ajudar você a se conectar com a sua natureza.*
