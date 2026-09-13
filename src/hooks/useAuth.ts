@@ -9,10 +9,10 @@ import {
     signOut,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
-    updateProfile,
-    AuthError
+    updateProfile
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { getAuthErrorMessage } from '@/features/auth/errors';
 
 
 export function useAuth() {
@@ -36,9 +36,9 @@ export function useAuth() {
         const provider = new GoogleAuthProvider();
         try {
             await signInWithPopup(auth, provider);
-        } catch (err: any) {
+        } catch (err) {
             console.error('Error logging in with Google', err);
-            setError(err.message || 'Failed to login with Google');
+            setError(getAuthErrorMessage(err, 'Falha ao entrar com Google'));
             throw err;
         }
     };
@@ -47,9 +47,9 @@ export function useAuth() {
         clearError();
         try {
             await signInWithEmailAndPassword(auth, email, pass);
-        } catch (err: any) {
+        } catch (err) {
             console.error('Error logging in', err);
-            setError(err.message || 'Failed to login');
+            setError(getAuthErrorMessage(err, 'Falha ao entrar'));
             throw err;
         }
     }
@@ -61,9 +61,9 @@ export function useAuth() {
             await updateProfile(userCredential.user, { displayName: name });
             // Force refresh user to get display name
             setUser({ ...userCredential.user, displayName: name });
-        } catch (err: any) {
+        } catch (err) {
             console.error('Error registering', err);
-            setError(err.message || 'Failed to register');
+            setError(getAuthErrorMessage(err, 'Falha ao registrar'));
             throw err;
         }
     }
@@ -72,9 +72,9 @@ export function useAuth() {
         clearError();
         try {
             await signOut(auth);
-        } catch (err: any) {
+        } catch (err) {
             console.error('Error logging out', err);
-            setError(err.message || 'Failed to logout');
+            setError(getAuthErrorMessage(err, 'Falha ao sair'));
             throw err;
         }
     };

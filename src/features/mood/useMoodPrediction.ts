@@ -1,10 +1,12 @@
+export type HormoneLevel = 'low' | 'rising' | 'peak' | 'dropping';
+
 export interface MoodDataPoint {
     day: number;
     mood: number; // 0-100 scale
     label: string; // e.g., "Menstruação", "Folicular", "Ovulação", "Lútea"
     hormones: {
-        estrogen: 'low' | 'rising' | 'peak' | 'dropping';
-        progesterone: 'low' | 'rising' | 'peak' | 'dropping';
+        estrogen: HormoneLevel;
+        progesterone: HormoneLevel;
     }
 }
 
@@ -20,8 +22,8 @@ export function useMoodPrediction(currentCycleDay: number = 1, cycleLength: numb
         for (let i = 1; i <= 28; i++) {
             let mood = 50;
             let label = "";
-            let estrogen: any = 'low';
-            let progesterone: any = 'low';
+            let estrogen: HormoneLevel = 'low';
+            let progesterone: HormoneLevel = 'low';
 
             if (i <= 5) {
                 // Menstruation: Low but rising slightly as relief sets in

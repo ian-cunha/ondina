@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRouter, usePathname } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { LiquidLoader } from "@/components/ui/liquid-loader";
 import { Loader2 } from 'lucide-react';
 
 const publicPaths = ['/login', '/register'];
@@ -78,7 +79,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     if (authLoading || roleLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center bg-background">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <LiquidLoader size="lg" />
             </div>
         );
     }

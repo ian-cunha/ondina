@@ -100,10 +100,11 @@ export function usePartner() {
 
             setLinkedAccountId(inviterId);
             toast.success("Conectado com sucesso!");
-        } catch (error: any) {
+        } catch (error) {
             console.error(error);
             let msg = "Erro ao conectar parceiro";
-            if (error.message.includes("permission-denied") || error.message.includes("Missing or insufficient permissions")) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            if (errorMessage.includes("permission-denied") || errorMessage.includes("Missing or insufficient permissions")) {
                 msg = "Este código já está sendo usado por outro parceiro.";
             }
             toast.error(msg);

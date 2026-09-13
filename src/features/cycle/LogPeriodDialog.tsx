@@ -14,7 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { useCycles } from '@/hooks/useCycles';
 import { toast } from 'sonner';
-import { Loader2, Plus, Calendar as CalendarIcon } from 'lucide-react';
+import { LiquidLoader } from "@/components/ui/liquid-loader";
+import { Loader2, Plus } from 'lucide-react';
 import { ptBR } from 'date-fns/locale';
 
 export function LogPeriodDialog() {
@@ -30,8 +31,9 @@ export function LogPeriodDialog() {
             await addCycle(date);
             toast.success("Menstruação registrada com sucesso!");
             setOpen(false);
-        } catch (error: any) {
-            toast.error(error.message || "Erro ao registrar");
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Erro ao registrar";
+            toast.error(message);
         } finally {
             setLoading(false);
         }
@@ -40,19 +42,19 @@ export function LogPeriodDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground h-10 w-10 sm:h-11 sm:w-auto sm:px-8 p-0 flex items-center justify-center">
-                    <Plus className="h-6 w-6 sm:h-5 sm:w-5 sm:mr-2" />
-                    <span className="hidden sm:inline">Registrar Ciclo</span>
+                <Button className="liquid-button-primary rounded-full px-5 py-2.5 h-11 text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer">
+                    <Plus className="h-5 w-5" />
+                    <span>Registrar Ciclo</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>Registrar Menstruação</DialogTitle>
-                    <DialogDescription>
+            <DialogContent className="sm:max-w-[425px] liquid-glass border-white/60 dark:border-white/15 rounded-3xl p-6 shadow-2xl">
+                <DialogHeader className="space-y-1.5">
+                    <DialogTitle className="text-xl font-bold tracking-tight">Registrar Menstruação</DialogTitle>
+                    <DialogDescription className="text-muted-foreground text-sm">
                         Selecione o primeiro dia do seu ciclo menstrual.
                     </DialogDescription>
                 </DialogHeader>
-                <div className="flex justify-center py-4">
+                <div className="flex justify-center py-3">
                     <Calendar
                         mode="single"
                         selected={date}
@@ -62,13 +64,13 @@ export function LogPeriodDialog() {
                             date > new Date() || date < new Date("1900-01-01")
                         }
                         initialFocus
-                        className="rounded-md border shadow"
+                        className="rounded-2xl liquid-glass-subtle p-3 shadow-inner"
                     />
                 </div>
                 <DialogFooter>
-                    <Button onClick={handleSave} disabled={!date || loading} className="w-full">
-                        {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                        Salvar
+                    <Button onClick={handleSave} disabled={!date || loading} className="w-full liquid-button-primary rounded-xl h-11 font-medium">
+                        {loading ? <LiquidLoader size="sm" className="mr-2" /> : null}
+                        Salvar Registro
                     </Button>
                 </DialogFooter>
             </DialogContent>

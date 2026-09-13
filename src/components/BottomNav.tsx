@@ -5,7 +5,6 @@ import { Home, Calendar, Settings, Smile, Lightbulb } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Button } from './ui/button';
 import { useState, useEffect } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -41,8 +40,8 @@ export function BottomNav() {
     ];
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/80 backdrop-blur-lg pb-safe">
-            <div className="flex h-16 items-center justify-around px-4">
+        <nav className="fixed bottom-4 inset-x-0 mx-auto w-[calc(100%-2rem)] max-w-md z-50 select-none">
+            <div className="liquid-dock rounded-3xl p-2 flex items-center justify-between gap-1 shadow-2xl">
                 {navItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href;
@@ -51,14 +50,25 @@ export function BottomNav() {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "flex flex-col items-center justify-center space-y-1 text-xs font-medium transition-colors hover:text-primary",
-                                isActive ? "text-primary" : "text-muted-foreground"
+                                "relative flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-xs transition-colors duration-300",
+                                isActive
+                                    ? "text-primary font-semibold"
+                                    : "text-muted-foreground font-medium hover:text-foreground"
                             )}
                         >
-                            <Icon className="h-6 w-6" />
-                            <span>{item.label}</span>
+                            {isActive && (
+                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/20 via-fuchsia-500/15 to-purple-500/20 border border-primary/30 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] -z-10" />
+                            )}
+                            <Icon className={cn(
+                                "h-5 w-5 transition-transform duration-300",
+                                isActive && "stroke-[2.2] filter drop-shadow-[0_2px_8px_rgba(217,70,239,0.35)]"
+                            )} />
+                            <span className="text-[11px] mt-0.5 tracking-tight">{item.label}</span>
+                            {isActive && (
+                                <span className="absolute -bottom-1 h-1 w-1 rounded-full bg-primary shadow-[0_0_6px_rgba(217,70,239,0.8)]" />
+                            )}
                         </Link>
-                    )
+                    );
                 })}
             </div>
         </nav>

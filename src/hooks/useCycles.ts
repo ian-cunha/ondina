@@ -49,7 +49,7 @@ export function useCycles(userId?: string) {
         // Ensure no duplicate start dates (basic check)
         const exists = cycles.find(c => c.startDate.split('T')[0] === startDate.toISOString().split('T')[0]);
         if (exists) {
-            throw new Error("A cycle already exists for this date.");
+            throw new Error("Já existe um ciclo registrado para esta data.");
         }
 
         await addDoc(collection(db, 'users', user.uid, 'cycles'), {

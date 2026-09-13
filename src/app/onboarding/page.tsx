@@ -1,37 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { Loader2, ArrowRight, Heart, Users } from 'lucide-react';
 import { toast } from 'sonner';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { LiquidLoader } from "@/components/ui/liquid-loader";
+import { Loader2, Heart, Users, Sparkles, ArrowLeft } from 'lucide-react';
 import { usePartner } from '@/hooks/usePartner';
 
 export default function OnboardingPage() {
     const { user } = useAuth();
     const router = useRouter();
-    const { linkPartner } = usePartner();
-
     const [step, setStep] = useState<'role' | 'details' | 'partner-code'>('role');
-    const [role, setRole] = useState<'user' | 'partner' | null>(null);
-
-    // User Details
-    const [periodLength, setPeriodLength] = useState('5');
-    const [cycleLength, setCycleLength] = useState('28');
-
-    // Partner Details
-    const [accessCode, setAccessCode] = useState('');
-
     const [loading, setLoading] = useState(false);
 
+    // Form states
+    const [periodLength, setPeriodLength] = useState('5');
+    const [cycleLength, setCycleLength] = useState('28');
+    const [accessCode, setAccessCode] = useState('');
+
+    const { linkPartner } = usePartner();
+
+    useEffect(() => {
+        const checkExistingUser = async () => {
+            if (user) {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    const data = userDoc.data();
+                    if (data.role) {
+                        router.push('/');
+                    }
+                }
+            }
+        };
+        checkExistingUser();
+    }, [user, router]);
+
     const handleRoleSelect = (selectedRole: 'user' | 'partner') => {
-        setRole(selectedRole);
         if (selectedRole === 'user') {
             setStep('details');
         } else {
@@ -55,7 +65,7 @@ export default function OnboardingPage() {
 
             toast.success("Perfil configurado com sucesso!");
             router.push('/');
-        } catch (error: any) {
+        } catch (error) {
             toast.error("Erro ao salvar configurações.");
             console.error(error);
         } finally {
@@ -71,30 +81,15 @@ export default function OnboardingPage() {
         }
         setLoading(true);
         try {
-            // First, set the role in the user document
             await setDoc(doc(db, 'users', user.uid), {
                 email: user.email,
                 displayName: user.displayName,
                 role: 'partner',
             }, { merge: true });
 
-            // Then try to link
-            // Note: linkPartner from hook might need minor adjustment if it relies on 'users' doc existing perfectly?
-            // But we just created/updated it above.
-
-            // We need to call the logic of linking manually or via hook.
-            // The hook function `linkPartner` does: checks invite -> updates my linkedAccountId -> updates their partnerId.
-
             await linkPartner(accessCode);
-
-            // If linkPartner throws, we catch it. If it succeeds:
-            // toast is handled in hook, but we can redirect.
-
-            // We check if it actually succeeded by maybe checking specific return or just assuming success if no error thrown?
-            // The hook currently returns void.
-
             router.push('/');
-        } catch (error: any) {
+        } catch (error) {
             toast.error("Erro ao conectar. Verifique o código.");
             console.error(error);
         } finally {
@@ -105,108 +100,163 @@ export default function OnboardingPage() {
     if (!user) return null;
 
     return (
-        <div className="flex min-h-screen items-center justify-center p-4 bg-background bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background">
-            <Card className="w-full max-w-md border-none shadow-2xl bg-card/50 backdrop-blur-xl transition-all duration-300">
-                <CardHeader>
-                    <CardTitle className="text-2xl text-center">
-                        {step === 'role' ? 'Boas-vindas!' : step === 'details' ? 'Sobre você' : 'Conectar Parceiro'}
-                    </CardTitle>
-                    <CardDescription className="text-center">
-                        {step === 'role' ? 'Como você deseja usar o Ondina?' :
-                            step === 'details' ? 'Ajude-nos a prever seu ciclo.' :
-                                'Insira o código fornecido pela sua parceira.'}
-                    </CardDescription>
-                </CardHeader>
+        <div className="flex min-h-screen items-center justify-center p-4 relative">
+            <div className="w-full max-w-md liquid-glass rounded-3xl p-8 md:p-10 shadow-2xl relative overflow-hidden space-y-6">
+                <div className="absolute -top-20 -left-20 w-44 h-44 bg-gradient-to-br from-white/40 to-transparent rounded-full blur-xl pointer-events-none" />
 
-                <CardContent className="space-y-6">
-                    {step === 'role' && (
-                        <div className="grid gap-4">
+                {/* Header */}
+                <div className="text-center space-y-2">
+                    <div className="inline-flex p-3 rounded-2xl bg-primary/15 text-primary mb-1 shadow-sm">
+                        <Sparkles className="h-6 w-6" />
+                    </div>
+                    <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+                        {step === 'role' ? 'Boas-vindas ao Ondina' : step === 'details' ? 'Seu Perfil de Ciclo' : 'Conectar à Parceira'}
+                    </h1>
+                    <p className="text-sm text-muted-foreground font-medium">
+                        {step === 'role' ? 'Escolha como deseja interagir com o aplicativo:' :
+                            step === 'details' ? 'Informe as médias para calcularmos previsões precisas.' :
+                                'Digite o código de 6 dígitos gerado pela sua parceira.'}
+                    </p>
+                </div>
+
+                {/* Step 1: Role Selection */}
+                {step === 'role' && (
+                    <div className="grid gap-4 pt-2">
+                        <button
+                            type="button"
+                            className="liquid-glass liquid-glass-interactive rounded-2xl p-5 text-left flex items-center gap-4 cursor-pointer group bg-gradient-to-r from-rose-500/[0.06] to-transparent"
+                            onClick={() => handleRoleSelect('user')}
+                        >
+                            <div className="h-12 w-12 rounded-2xl bg-rose-500/15 flex items-center justify-center text-rose-500 shadow-sm group-hover:scale-110 transition-transform">
+                                <Heart className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <span className="text-base font-bold text-foreground block">
+                                    Acompanhar Meu Ciclo
+                                </span>
+                                <span className="text-xs text-muted-foreground font-medium">
+                                    Monitoramento pessoal, previsões e registro diário
+                                </span>
+                            </div>
+                        </button>
+
+                        <button
+                            type="button"
+                            className="liquid-glass liquid-glass-interactive rounded-2xl p-5 text-left flex items-center gap-4 cursor-pointer group bg-gradient-to-r from-purple-500/[0.06] to-transparent"
+                            onClick={() => handleRoleSelect('partner')}
+                        >
+                            <div className="h-12 w-12 rounded-2xl bg-purple-500/15 flex items-center justify-center text-purple-500 shadow-sm group-hover:scale-110 transition-transform">
+                                <Users className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <span className="text-base font-bold text-foreground block">
+                                    Acompanhar Parceira
+                                </span>
+                                <span className="text-xs text-muted-foreground font-medium">
+                                    Visão do ciclo compartilhado e dicas para apoiar
+                                </span>
+                            </div>
+                        </button>
+                    </div>
+                )}
+
+                {/* Step 2: Cycle Details */}
+                {step === 'details' && (
+                    <div className="space-y-4 pt-2">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="periodLength" className="text-xs font-semibold text-foreground">
+                                Duração da Menstruação (dias)
+                            </Label>
+                            <Input
+                                id="periodLength"
+                                type="number"
+                                value={periodLength}
+                                onChange={(e) => setPeriodLength(e.target.value)}
+                                min="1"
+                                max="10"
+                                className="liquid-glass-input rounded-xl h-11"
+                            />
+                            <p className="text-[11px] text-muted-foreground">Normalmente varia entre 3 e 7 dias.</p>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <Label htmlFor="cycleLength" className="text-xs font-semibold text-foreground">
+                                Duração Média do Ciclo (dias)
+                            </Label>
+                            <Input
+                                id="cycleLength"
+                                type="number"
+                                value={cycleLength}
+                                onChange={(e) => setCycleLength(e.target.value)}
+                                min="20"
+                                max="45"
+                                className="liquid-glass-input rounded-xl h-11"
+                            />
+                            <p className="text-[11px] text-muted-foreground">Média comum é de 28 dias.</p>
+                        </div>
+
+                        <div className="flex items-center gap-3 pt-3">
                             <Button
-                                variant="outline"
-                                className="h-24 flex flex-col gap-2 hover:border-primary hover:bg-primary/5 cursor-pointer"
-                                onClick={() => handleRoleSelect('user')}
+                                variant="ghost"
+                                onClick={() => setStep('role')}
+                                disabled={loading}
+                                className="liquid-glass-pill rounded-xl h-11 px-4 cursor-pointer"
                             >
-                                <Heart className="h-8 w-8 text-primary" />
-                                <span className="font-semibold">Acompanhar meu Ciclo</span>
+                                <ArrowLeft className="h-4 w-4 mr-1" /> Voltar
                             </Button>
                             <Button
-                                variant="outline"
-                                className="h-24 flex flex-col gap-2 hover:border-purple-500 hover:bg-purple-500/5 cursor-pointer"
-                                onClick={() => handleRoleSelect('partner')}
+                                onClick={handleSaveUser}
+                                disabled={loading}
+                                className="flex-1 liquid-button-primary rounded-xl h-11 font-medium cursor-pointer"
                             >
-                                <Users className="h-8 w-8 text-purple-500" />
-                                <span className="font-semibold">Acompanhar Parceira</span>
+                                {loading ? <LiquidLoader size="sm" className="mr-2" /> : null}
+                                Começar
                             </Button>
                         </div>
-                    )}
+                    </div>
+                )}
 
-                    {step === 'details' && (
-                        <>
-                            <div className="space-y-2">
-                                <Label htmlFor="periodLength">Duração da Menstruação (dias)</Label>
-                                <Input
-                                    id="periodLength"
-                                    type="number"
-                                    value={periodLength}
-                                    onChange={(e) => setPeriodLength(e.target.value)}
-                                    min="1"
-                                    max="10"
-                                    className="bg-background/50"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="cycleLength">Duração do Ciclo (dias)</Label>
-                                <Input
-                                    id="cycleLength"
-                                    type="number"
-                                    value={cycleLength}
-                                    onChange={(e) => setCycleLength(e.target.value)}
-                                    min="20"
-                                    max="45"
-                                    className="bg-background/50"
-                                />
-                            </div>
-                        </>
-                    )}
-
-                    {step === 'partner-code' && (
+                {/* Step 3: Partner Code */}
+                {step === 'partner-code' && (
+                    <div className="space-y-4 pt-2">
                         <div className="space-y-2">
-                            <Label htmlFor="accessCode">Código de Acesso</Label>
+                            <Label htmlFor="accessCode" className="text-xs font-semibold text-foreground">
+                                Código de Acesso do Parceiro
+                            </Label>
                             <Input
                                 id="accessCode"
-                                placeholder="Ex: X7Y2Z9"
+                                placeholder="EX: A1B2C3"
                                 value={accessCode}
                                 onChange={(e) => setAccessCode(e.target.value.toUpperCase())}
                                 maxLength={6}
-                                className="bg-background/50 text-center tracking-widest text-lg uppercase"
+                                className="liquid-glass-input rounded-xl h-12 text-center tracking-widest font-mono font-bold text-lg uppercase"
                             />
-                            <p className="text-xs text-muted-foreground text-center">
-                                Peça para a sua parceira gerar o código em Ajustes {'>'} Acesso do Parceiro.
+                            <p className="text-xs text-muted-foreground text-center font-medium">
+                                Peça para a sua parceira o código gerado em Ajustes &gt; Acesso do Parceiro.
                             </p>
                         </div>
-                    )}
-                </CardContent>
 
-                <CardFooter className="flex justify-between">
-                    {step !== 'role' && (
-                        <Button variant="ghost" onClick={() => setStep('role')} disabled={loading}>
-                            Voltar
-                        </Button>
-                    )}
-
-                    {step === 'details' && (
-                        <Button onClick={handleSaveUser} disabled={loading} className="ml-auto w-full sm:w-auto">
-                            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Começar"}
-                        </Button>
-                    )}
-
-                    {step === 'partner-code' && (
-                        <Button onClick={handleSavePartner} disabled={loading || !accessCode} className="ml-auto w-full sm:w-auto">
-                            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Conectar"}
-                        </Button>
-                    )}
-                </CardFooter>
-            </Card>
+                        <div className="flex items-center gap-3 pt-3">
+                            <Button
+                                variant="ghost"
+                                onClick={() => setStep('role')}
+                                disabled={loading}
+                                className="liquid-glass-pill rounded-xl h-11 px-4 cursor-pointer"
+                            >
+                                <ArrowLeft className="h-4 w-4 mr-1" /> Voltar
+                            </Button>
+                            <Button
+                                onClick={handleSavePartner}
+                                disabled={loading || !accessCode}
+                                className="flex-1 liquid-button-primary rounded-xl h-11 font-medium cursor-pointer"
+                            >
+                                {loading ? <LiquidLoader size="sm" className="mr-2" /> : null}
+                                Conectar
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
